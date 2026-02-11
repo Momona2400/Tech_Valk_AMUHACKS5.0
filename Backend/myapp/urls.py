@@ -11,5 +11,7 @@ urlpatterns = [
     path('save-daily-log/', views.save_daily_log, name='save_daily_log'),
     path("complete-quest/", views.complete_quest, name="complete_quest"),
     path("skip-quest/", views.skip_quest, name="skip_quest"),
+    path("mentor-chat/", views.mentor_chat, name="mentor_chat"),
+
 
 ]

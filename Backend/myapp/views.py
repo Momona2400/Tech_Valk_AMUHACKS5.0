@@ -9,6 +9,10 @@ from .models import DailyLog, Resource
 from django.utils import timezone
 from .models import DailyLog
 import random
+from .utils import get_ai_response
+from django.http import JsonResponse
+import json
+
 
 
 @login_required
@@ -215,18 +219,21 @@ def dashboard(request):
             quest_pool = [
                 {"title": "Complete One 10-Minute Task", "description": "No pressure. Just begin."},
                 {"title": "Write 3 Small Wins", "description": "Focus on what’s working."},
+                {"title": "Make a painting or dance, do whatever is your hobby.","description": "Feel calm and better"}
             ]
 
         elif first_mood == "😎 Confident Aura":
             quest_pool = [
-                {"title": "Speak Once Today", "description": "Channel your confidence."},
+                {"title": "Speak Once in front of mirror Today", "description": "Channel your confidence."},
                 {"title": "Share Your Opinion in Class", "description": "Use your momentum wisely."},
+                {"title": "Record yourself speaking about your favourite topic", "description": "Thought clarity and analysis of speech."},
             ]
 
         else:
             quest_pool = [
                 {"title": "Write Down One Fear", "description": "Clarity builds courage."},
                 {"title": "Do One Small Brave Thing", "description": "Courage grows slowly."},
+                {"title": "Write in your diary about today", "description": "Self-reflection."},
             ]
 
 
@@ -236,11 +243,13 @@ def dashboard(request):
             quest_pool = [
                 {"title": "Attempt a Mock Interview", "description": "Push your boundaries."},
                 {"title": "Apply to One Internship", "description": "Take a bold step."},
+                {"title": "Talk with senior about career oppurtunities", "description": "Take a bold step."},
             ]
         else:
             quest_pool = [
                 {"title": "Participate in Discussion", "description": "Step slightly outside comfort."},
                 {"title": "Ask One Question Publicly", "description": "Engage actively."},
+                {"title": "Talk with a new person in college", "description": "Social networking."},
             ]
 
 
@@ -306,3 +315,14 @@ def save_daily_log(request):
                 )
 
         return redirect("dashboard")
+    
+def mentor_chat(request):
+
+    if request.method == "POST":
+        data = json.loads(request.body)
+        message = data.get("message")
+
+        ai_reply = get_ai_response(message)
+
+        return JsonResponse({"reply": ai_reply})
+

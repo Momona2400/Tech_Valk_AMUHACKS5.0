@@ -564,15 +564,17 @@
         }
 
         .modal {
-            background: linear-gradient(145deg, rgba(42, 24, 16, 0.98), rgba(26, 15, 8, 0.98));
-            border: 2px solid rgba(139, 105, 20, 0.6);
-            border-radius: 16px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 80vh;
-            display: flex;
-            flex-direction: column;
-        }
+    width: 90%;
+    max-width: 600px;
+    height: 80vh;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+}
+
+
 
         .modal-header {
             display: flex;
@@ -631,27 +633,24 @@
         }
 
         .modal-content {
-            padding: 30px;
-            overflow: hidden;
-            /* ⭐ FIX */
-            flex: 1;
+            flex: 1;              /* takes available space */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;     /* prevent expansion */
+            padding: 20px 30px;
         }
-
-
         .chat-messages {
+            flex: 1;               /* fill remaining space */
+            overflow-y: auto;      /* scroll here */
             display: flex;
             flex-direction: column;
             gap: 20px;
-            margin-bottom: 20px;
-            max-height: 400px;
-            /* ⭐ ADD THIS */
-            overflow-y: auto;
+            padding-right: 5px;
         }
-
-        .message {
-            display: flex;
-            gap: 12px;
-        }
+             .message {
+                    display: flex;
+                    gap: 12px;
+                }
 
         .message-icon {
             width: 36px;
@@ -737,10 +736,12 @@
             font-size: 11px;
         }
 
-        .modal-input-area {
-            padding: 20px 30px;
-            border-top: 1px solid rgba(139, 105, 20, 0.3);
-        }
+       .modal-input-area {
+    padding: 20px 30px;
+    border-top: 1px solid rgba(139, 105, 20, 0.3);
+    flex-shrink: 0;        /* ⭐ THIS FIXES YOUR ISSUE */
+}
+
 
         .chat-input-wrapper {
             display: flex;
@@ -872,7 +873,7 @@ body.fade-out{
 
             <h1>
                 <span>🧭</span>
-                Welcome
+                 Welcome, {{ request.user.first_name|default:request.user.username }}!
             </h1>
             <p>Continue your journey of growth and confidence</p>
         </div>
@@ -1279,44 +1280,71 @@ body.fade-out{
             document.getElementById('mentorModal').classList.remove('active');
         }
 
-        function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const message = input.value.trim();
+       function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
 
-            if (message) {
-                const chatMessages = document.getElementById('chatMessages');
+    if (!message) return;
 
-                // Add user message
-                const userMsg = document.createElement('div');
-                userMsg.className = 'message';
-                userMsg.innerHTML = `
-                    <div class="message-icon">👤</div>
-                    <div class="message-content">
-                        <div class="message-text">${message}</div>
-                        <div class="message-time">${new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
-                    </div>
-                `;
-                chatMessages.appendChild(userMsg);
+    const chatMessages = document.getElementById('chatMessages');
 
-                input.value = '';
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+    // Show user message
+    const userMsg = document.createElement('div');
+    userMsg.className = 'message';
+    userMsg.innerHTML = `
+        <div class="message-icon">👤</div>
+        <div class="message-content">
+            <div class="message-text">${message}</div>
+            <div class="message-time">${new Date().toLocaleTimeString()}</div>
+        </div>
+    `;
+    chatMessages.appendChild(userMsg);
 
-                // Simulate AI response
-                setTimeout(() => {
-                    const aiMsg = document.createElement('div');
-                    aiMsg.className = 'message';
-                    aiMsg.innerHTML = `
-                        <div class="message-icon">🤖</div>
-                        <div class="message-content">
-                            <div class="message-text">Thank you for sharing. I'm here to help you navigate this. Would you like to talk more about it?</div>
-                            <div class="message-time">${new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
-                        </div>
-                    `;
-                    chatMessages.appendChild(aiMsg);
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }, 1000);
-            }
-        }
+    input.value = "";
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // 🔥 Show temporary loading message
+    const loadingMsg = document.createElement('div');
+    loadingMsg.className = 'message';
+    loadingMsg.innerHTML = `
+        <div class="message-icon">🤖</div>
+        <div class="message-content">
+            <div class="message-text">Thinking...</div>
+        </div>
+    `;
+    chatMessages.appendChild(loadingMsg);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // 🔥 Fetch call
+    fetch("/mentor-chat/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({ message: message })
+    })
+    .then(response => response.json())
+    .then(data => {
+        loadingMsg.remove();
+
+        const aiMsg = document.createElement('div');
+        aiMsg.className = 'message';
+        aiMsg.innerHTML = `
+            <div class="message-icon">🤖</div>
+            <div class="message-content">
+                <div class="message-text">${data.reply}</div>
+                <div class="message-time">${new Date().toLocaleTimeString()}</div>
+            </div>
+        `;
+        chatMessages.appendChild(aiMsg);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    })
+    .catch(error => {
+        loadingMsg.remove();
+        alert("Error connecting to AI");
+    });
+}
 
         function handleChatEnter(event) {
             if (event.key === 'Enter') {
