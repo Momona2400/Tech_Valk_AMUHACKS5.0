@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | Fresher Compass</title>
+    <style>
+                * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(ellipse at center, #4a3520 0%, #3d2817 40%, #1a0f08 80%);
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .parallax-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.2s ease-out;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 100vh;
+            padding: 0 5%;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Compass Section */
+        .compass-section {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .compass-wrapper {
+            position: relative;
+            width: 600px;
+            height: 600px;
+        }
+
+        .compass {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: radial-gradient(circle at center, #2a1810 0%, #1f1209 100%);
+            box-shadow: 
+                0 0 0 3px rgba(139, 105, 20, 0.4),
+                0 0 0 8px rgba(139, 105, 20, 0.2),
+                0 0 40px rgba(218, 165, 32, 0.3),
+                inset 0 0 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .compass-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+
+        /* Compass rings */
+        .compass-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            border: 1px solid rgba(218, 165, 32, 0.3);
+        }
+
+        .ring-outer {
+            width: 90%;
+            height: 90%;
+        }
+
+        .ring-middle {
+            width: 75%;
+            height: 75%;
+            border-color: rgba(218, 165, 32, 0.5);
+        }
+
+        .compass-markings {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .direction {
+            position: absolute;
+            font-size: 20px;
+            font-weight: bold;
+            color: #f4e4c1;
+            text-shadow: 0 0 10px rgba(218, 165, 32, 0.8);
+            font-family: 'Georgia', serif;
+        }
+
+        .direction.n { top: 18px; left: 50%; transform: translateX(-50%); }
+        .direction.e { right: 22px; top: 50%; transform: translateY(-50%); }
+        .direction.s { bottom: 18px; left: 50%; transform: translateX(-50%); }
+        .direction.w { left: 22px; top: 50%; transform: translateY(-50%); }
+
+        .compass-ticks {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .tick {
+            position: absolute;
+            width: 2px;
+            background: #daa520;
+            top: 12px;
+            left: 50%;
+            transform-origin: 50% 98px;
+        }
+
+        .tick.major {
+            height: 12px;
+            width: 3px;
+            background: #f4e4c1;
+            box-shadow: 0 0 5px rgba(244, 228, 193, 0.6);
+        }
+
+        .tick.minor {
+            height: 8px;
+            width: 2px;
+            background: rgba(218, 165, 32, 0.6);
+        }
+
+        .compass-needle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            transition: transform 0.3s ease-out;
+        }
+
+        .needle-north {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 70px solid #c41e3a;
+            position: absolute;
+            top: -70px;
+            left: -10px;
+            filter: drop-shadow(0 0 8px rgba(196, 30, 58, 0.9));
+        }
+
+        .needle-south {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 70px solid #f4e4c1;
+            position: absolute;
+            top: 0;
+            left: -10px;
+            filter: drop-shadow(0 0 8px rgba(244, 228, 193, 0.7));
+        }
+
+        .needle-center {
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #daa520, #c4941a, #8b6914);
+            border-radius: 50%;
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            box-shadow: 
+                0 0 15px rgba(218, 165, 32, 1),
+                inset 0 2px 5px rgba(255, 255, 255, 0.3);
+            border: 2px solid #f4e4c1;
+        }
+
+        /* Dashed lines from compass to nodes */
+        .dashed-line {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            height: 2px;
+            background: repeating-linear-gradient(
+                to right,
+                rgba(139, 105, 20, 0.5) 0px,
+                rgba(139, 105, 20, 0.5) 8px,
+                transparent 8px,
+                transparent 16px
+            );
+            transform-origin: 0 50%;
+            z-index: 1;
+        }
+
+        /* Career Paths - repositioned with better spacing */
+        .career-node {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            z-index: 5;
+        }
+
+        .career-node:hover {
+            transform: scale(1.1);
+        }
+
+        .node-dot {
+            width: 26px;
+            height: 26px;
+            background: radial-gradient(circle at 30% 30%, #f4e4c1, #daa520, #8b6914);
+            border-radius: 50%;
+            border: 2px solid #daa520;
+            box-shadow: 
+                0 0 20px rgba(218, 165, 32, 0.8),
+                inset 0 1px 3px rgba(255, 255, 255, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                box-shadow: 
+                    0 0 20px rgba(218, 165, 32, 0.8),
+                    inset 0 1px 3px rgba(255, 255, 255, 0.4);
+            }
+            50% { 
+                box-shadow: 
+                    0 0 30px rgba(218, 165, 32, 1),
+                    inset 0 1px 3px rgba(255, 255, 255, 0.4);
+            }
+        }
+
+        .node-label {
+            background: linear-gradient(145deg, rgba(40, 28, 16, 0.95), rgba(25, 18, 10, 0.95));
+            color: #f4e4c1;
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(139, 105, 20, 0.6);
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            box-shadow: 
+                0 0 15px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(218, 165, 32, 0.2);
+        }
+
+        /* Login Panel */
+        .login-panel {
+            background: linear-gradient(145deg, #2a1810, #1a0f08);
+            border: 2px solid #8b6914;
+            border-radius: 20px;
+            padding: 50px 40px;
+            width: 450px;
+            box-shadow: 0 0 50px rgba(218, 165, 32, 0.2), inset 0 0 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .login-header h1 {
+            color: #f4e4c1;
+            font-size: 32px;
+            margin-bottom: 8px;
+            text-shadow: 0 0 20px rgba(218, 165, 32, 0.3);
+        }
+
+        .login-header p {
+            color: #a89968;
+            font-size: 14px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: rgba(15, 10, 5, 0.6);
+            border: 1px solid #8b6914;
+            border-radius: 10px;
+            padding: 14px 18px;
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: #daa520;
+            box-shadow: 0 0 15px rgba(218, 165, 32, 0.3);
+        }
+
+        .input-icon {
+            color: #8b6914;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #f4e4c1;
+            font-size: 15px;
+            flex: 1;
+        }
+
+        input::placeholder {
+            color: #6b5d42;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-top: -15px;
+            margin-bottom: 25px;
+        }
+
+        .forgot-password a {
+            color: #a89968;
+            font-size: 13px;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .forgot-password a:hover {
+            color: #daa520;
+        }
+
+        .continue-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #d4941a, #8b6914);
+            color: #1a0f08;
+            border: none;
+            padding: 16px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(218, 165, 32, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .continue-btn:hover {
+            background: linear-gradient(135deg, #e6a820, #9d7515);
+            box-shadow: 0 8px 30px rgba(218, 165, 32, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .divider p {
+            color: #6b5d42;
+            font-size: 13px;
+        }
+
+        .create-account-btn {
+            width: 100%;
+            background: transparent;
+            color: #daa520;
+            border: 1px solid #8b6914;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .create-account-btn:hover {
+            background: rgba(218, 165, 32, 0.1);
+            border-color: #daa520;
+        }
+
+        .footer-quote {
+            text-align: center;
+            margin-top: 25px;
+            color: #6b5d42;
+            font-size: 12px;
+            font-style: italic;
+        }
+        .error-message {
+            color: red;
+           
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+}
+    </style>
+</head>
+<body>
+<div class="parallax-container" id="parallaxContainer">
+
+<div class="container slim-container">
+
+    <!-- LEFT SIDE SAME COMPASS SECTION -->
+    <div class="compass-section">
+        <div class="compass-wrapper" id="compassWrapper">
+
+            <div class="compass">
+                <div class="compass-ring ring-outer"></div>
+                <div class="compass-ring ring-middle"></div>
+
+                <div class="compass-face">
+                    <div class="compass-markings">
+                        <div class="direction n">N</div>
+                        <div class="direction e">E</div>
+                        <div class="direction s">S</div>
+                        <div class="direction w">W</div>
+                    </div>
+
+                    <div class="compass-ticks" id="compassTicks"></div>
+
+                    <div class="compass-needle" id="compassNeedle">
+                        <div class="needle-north"></div>
+                        <div class="needle-south"></div>
+                        <div class="needle-center"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Career Nodes (same as login page) -->
+            <div class="career-node node-engineer" style="top: -40px; left: 50%; transform: translateX(-50%);">
+                <div class="node-dot"></div>
+                <div class="node-label">Engineer</div>
+            </div>
+
+            <div class="career-node node-professor" style="top: 20px; left: 60px;">
+                <div class="node-dot"></div>
+                <div class="node-label">Professor</div>
+            </div>
+
+            <div class="career-node node-researcher" style="top: 20px; right: 60px;">
+                <div class="node-dot"></div>
+                <div class="node-label">Researcher</div>
+            </div>
+
+            <div class="career-node node-innovator" style="top: 50%; left: -50px; transform: translateY(-50%);">
+                <div class="node-dot"></div>
+                <div class="node-label">Innovator</div>
+            </div>
+
+            <div class="career-node node-architect" style="top: 50%; right: -50px; transform: translateY(-50%);">
+                <div class="node-dot"></div>
+                <div class="node-label">Architect</div>
+            </div>
+
+            <div class="career-node node-analyst" style="bottom: 100px; left: 50px;">
+                <div class="node-dot"></div>
+                <div class="node-label">Analyst</div>
+            </div>
+
+            <div class="career-node node-designer" style="bottom: 100px; right: 50px;">
+                <div class="node-dot"></div>
+                <div class="node-label">Designer</div>
+            </div>
+
+            <div class="career-node node-developer" style="bottom: 10px; left: 30%;">
+                <div class="node-dot"></div>
+                <div class="node-label">Developer</div>
+            </div>
+
+            <div class="career-node node-scientist" style="bottom: 10px; right: 28%;">
+                <div class="node-dot"></div>
+                <div class="node-label">Scientist</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- REGISTER PANEL -->
+    <div class="login-panel">
+
+        <div class="login-header">
+            <h1>Start Your Journey</h1>
+            <p>Create your Fresher Compass account</p>
+        </div>
+
+       <form method="POST">
+    {% csrf_token %}
+
+    <!-- FULL NAME -->
+    <div class="input-group">
+        <div class="input-wrapper">
+            <span class="input-icon">👤</span>
+            <input type="text" placeholder="Full Name" name="username" required>
+        </div>
+    </div>
+
+    <!-- EMAIL -->
+    <div class="input-group">
+        <div class="input-wrapper">
+            <span class="input-icon">✉</span>
+            <input type="email" placeholder="abc@email.com" name="email" required>
+        </div>
+    </div>
+
+    <!-- PASSWORD -->
+    <div class="input-group">
+        <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input type="password" placeholder="Create Password" name="password" required>
+        </div>
+    </div>
+
+    <!-- CONFIRM PASSWORD -->
+    <div class="input-group">
+        <div class="input-wrapper">
+            <span class="input-icon">🔐</span>
+            <input type="password" placeholder="Confirm Password" name="confirm_password" required>
+        </div>
+    </div>
+
+    <button type="submit" class="continue-btn">
+        Begin Journey →
+    </button>
+</form>
+
+
+    </div>
+
+</div>
+</div>
+
+<script>
+/* SAME SCRIPT FROM LOGIN PAGE */
+
+// Create compass ticks
+const ticksContainer = document.getElementById('compassTicks');
+for (let i = 0; i < 36; i++) {
+    const tick = document.createElement('div');
+    tick.className = (i % 9 === 0) ? 'tick major' : 'tick minor';
+    tick.style.transform = `translateX(-50%) rotate(${i * 10}deg)`;
+    ticksContainer.appendChild(tick);
+}
+
+// Create dashed lines from compass center to each node (copied from login)
+function createDashedLines() {
+    const wrapper = document.getElementById('compassWrapper');
+    const compassCenter = { x: 300, y: 300 };
+
+    const nodes = [
+        { selector: '.node-engineer', className: 'line-engineer' },
+        { selector: '.node-professor', className: 'line-professor' },
+        { selector: '.node-researcher', className: 'line-researcher' },
+        { selector: '.node-innovator', className: 'line-innovator' },
+        { selector: '.node-architect', className: 'line-architect' },
+        { selector: '.node-analyst', className: 'line-analyst' },
+        { selector: '.node-designer', className: 'line-designer' },
+        { selector: '.node-developer', className: 'line-developer' },
+        { selector: '.node-scientist', className: 'line-scientist' }
+    ];
+
+    nodes.forEach((nodeConfig) => {
+        const node = wrapper.querySelector(nodeConfig.selector);
+        if (!node) return;
+
+        const rect = node.getBoundingClientRect();
+        const wrapperRect = wrapper.getBoundingClientRect();
+
+        const nodeX = rect.left - wrapperRect.left + rect.width / 2;
+        const nodeY = rect.top - wrapperRect.top + rect.height / 2;
+
+        const dx = nodeX - compassCenter.x;
+        const dy = nodeY - compassCenter.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        const angleRad = Math.atan2(dy, dx);
+        const angleDeg = angleRad * (180 / Math.PI);
+
+        const line = document.createElement('div');
+        line.className = 'dashed-line ' + nodeConfig.className;
+        line.style.width = `${distance - 110}px`;
+        line.style.transform = `translate(0, -50%) rotate(${angleDeg}deg)`;
+        line.style.left = `${compassCenter.x + Math.cos(angleRad) * 110}px`;
+        line.style.top = `${compassCenter.y + Math.sin(angleRad) * 110}px`;
+
+        wrapper.insertBefore(line, wrapper.firstChild);
+    });
+}
+
+// Create lines after DOM is loaded
+window.addEventListener('load', createDashedLines);
+
+// Parallax + needle
+const parallaxContainer = document.getElementById('parallaxContainer');
+const compassNeedle = document.getElementById('compassNeedle');
+
+document.addEventListener('mousemove', (e) => {
+    const mouseX = e.clientX / window.innerWidth;
+    const mouseY = e.clientY / window.innerHeight;
+
+    const moveX = (mouseX - 0.5) * 30;
+    const moveY = (mouseY - 0.5) * 30;
+    parallaxContainer.style.transform = `translate(${moveX}px, ${moveY}px)`;
+
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    const dx = e.clientX - centerX;
+    const dy = e.clientY - centerY;
+    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+
+    compassNeedle.style.transform =
+        `translate(-50%, -50%) rotate(${angle + 90}deg)`;
+});
+</script>
+
+</body>
+</html>
