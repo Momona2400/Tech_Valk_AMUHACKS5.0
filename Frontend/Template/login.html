@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fresher Compass</title>
+    <link rel="stylesheet" href="style/style.css">
+</head>
+<body>
+    <div class="parallax-container" id="parallaxContainer">
+        <div class="container">
+            <!-- Compass Section -->
+            <div class="compass-section">
+                <div class="compass-wrapper" id="compassWrapper">
+                    <!-- Dashed lines will be added here by JavaScript -->
+                    
+                    <!-- Compass -->
+                    <div class="compass">
+                        <div class="compass-ring ring-outer"></div>
+                        <div class="compass-ring ring-middle"></div>
+                        <div class="compass-face">
+                            <div class="compass-markings">
+                                <div class="direction n">N</div>
+                                <div class="direction e">E</div>
+                                <div class="direction s">S</div>
+                                <div class="direction w">W</div>
+                            </div>
+                            <div class="compass-ticks" id="compassTicks"></div>
+                            <div class="compass-needle" id="compassNeedle">
+                                <div class="needle-north"></div>
+                                <div class="needle-south"></div>
+                                <div class="needle-center"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Career Nodes -->
+                    <div class="career-node node-engineer" style="top: -40px; left: 50%; transform: translateX(-50%);">
+                        <div class="node-dot"></div>
+                        <div class="node-label">Engineer</div>
+                    </div>
+
+                    <div class="career-node node-professor" style="top: 20px; left: 60px;">
+                        <div class="node-dot"></div>
+                        <div class="node-label">Professor</div>
+                    </div>
+
+                    <div class="career-node node-researcher" style="top: 20px; right: 60px;">
+                        <div class="node-dot"></div>
+                        <div class="node-label">Researcher</div>
+                    </div>
+
+                    <div class="career-node node-innovator" style="top: 50%; left: -50px; transform: translateY(-50%);">
+                        <div class="node-dot"></div>
+                        <div class="node-label">Innovator</div>
+                    </div>
+
+                    <div class="career-node node-architect" style="top: 50%; right: -50px; transform: translateY(-50%);">
+                        <div class="node-dot"></div>
+                        <div class="node-label">Architect</div>
+                    </div>
+
+                    <div class="career-node node-analyst" style="bottom: 100px; left: 50px;">
+                        <div class="node-dot"></div>
+                        <div class="node-label">Analyst</div>
+                    </div>
+
+                    <div class="career-node node-designer" style="bottom: 100px; right: 50px;">
+                        <div class="node-dot"></div>
+                        <div class="node-label">Designer</div>
+                    </div>
+
+                    <div class="career-node node-developer" style="bottom: 10px; left: 30%;">
+                        <div class="node-dot"></div>
+                        <div class="node-label">Developer</div>
+                    </div>
+
+                    <div class="career-node node-scientist" style="bottom: 10px; right: 28%;">
+                        <div class="node-dot"></div>
+                        <div class="node-label">Scientist</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login Panel -->
+            <div class="login-panel">
+                <div class="login-header">
+                    <h1>Navigate Your Path</h1>
+                    <p>Continue your journey of excellence</p>
+                </div>
+
+                <form>
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <span class="input-icon">✉</span>
+                            <input type="email" placeholder="abc@email.com">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <span class="input-icon">🔒</span>
+                            <input type="password" placeholder="••••••">
+                        </div>
+                    </div>
+
+                    <div class="forgot-password">
+                        <a href="#">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="continue-btn">
+                        Continue Journey
+                        <span>→</span>
+                    </button>
+
+                    <div class="divider">
+                        <p>Ready to start your journey?</p>
+                    </div>
+
+                    <button type="button" class="create-account-btn">
+                        Create New Account
+                    </button>
+
+                    <div class="footer-quote">
+                        "Every journey begins with a single step towards your destination"
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create compass ticks - major and minor
+        const ticksContainer = document.getElementById('compassTicks');
+        for (let i = 0; i < 36; i++) {
+            const tick = document.createElement('div');
+            // Major ticks at 0, 90, 180, 270 degrees
+            if (i % 9 === 0) {
+                tick.className = 'tick major';
+            } else {
+                tick.className = 'tick minor';
+            }
+            tick.style.transform = `translateX(-50%) rotate(${i * 10}deg)`;
+            ticksContainer.appendChild(tick);
+        }
+
+        // Create dashed lines from compass center to each node
+        function createDashedLines() {
+            const wrapper = document.getElementById('compassWrapper');
+            const compassCenter = { x: 300, y: 300 }; // Center of 600x600 wrapper
+            
+            // Get actual node positions and calculate angles
+            const nodes = [
+                { selector: '.node-engineer', className: 'line-engineer' },
+                { selector: '.node-professor', className: 'line-professor' },
+                { selector: '.node-researcher', className: 'line-researcher' },
+                { selector: '.node-innovator', className: 'line-innovator' },
+                { selector: '.node-architect', className: 'line-architect' },
+                { selector: '.node-analyst', className: 'line-analyst' },
+                { selector: '.node-designer', className: 'line-designer' },
+                { selector: '.node-developer', className: 'line-developer' },
+                { selector: '.node-scientist', className: 'line-scientist' }
+            ];
+            
+            nodes.forEach((nodeConfig) => {
+                const node = wrapper.querySelector(nodeConfig.selector);
+                if (!node) return;
+                
+                const rect = node.getBoundingClientRect();
+                const wrapperRect = wrapper.getBoundingClientRect();
+                
+                // Calculate node position relative to wrapper
+                const nodeX = rect.left - wrapperRect.left + rect.width / 2;
+                const nodeY = rect.top - wrapperRect.top + rect.height / 2;
+                
+                // Calculate distance from center to node
+                const dx = nodeX - compassCenter.x;
+                const dy = nodeY - compassCenter.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                // Calculate angle in radians and degrees
+                const angleRad = Math.atan2(dy, dx);
+                const angleDeg = angleRad * (180 / Math.PI);
+                
+                // Create line
+                const line = document.createElement('div');
+                line.className = 'dashed-line ' + nodeConfig.className;
+                line.style.width = `${distance - 110}px`; // Subtract compass radius
+                line.style.transform = `translate(0, -50%) rotate(${angleDeg}deg)`;
+                line.style.left = `${compassCenter.x + Math.cos(angleRad) * 110}px`;
+                line.style.top = `${compassCenter.y + Math.sin(angleRad) * 110}px`;
+                
+                wrapper.insertBefore(line, wrapper.firstChild);
+            });
+        }
+
+        // Create lines after DOM is loaded
+        window.addEventListener('load', createDashedLines);
+
+        // Cursor-based parallax effect and compass needle rotation
+        const parallaxContainer = document.getElementById('parallaxContainer');
+        const compassNeedle = document.getElementById('compassNeedle');
+        
+        document.addEventListener('mousemove', (e) => {
+            const mouseX = e.clientX / window.innerWidth;
+            const mouseY = e.clientY / window.innerHeight;
+            
+            // Parallax effect
+            const moveX = (mouseX - 0.5) * 30;
+            const moveY = (mouseY - 0.5) * 30;
+            parallaxContainer.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            
+            // Compass needle rotation
+            // Calculate angle from center of screen to mouse
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            const dx = e.clientX - centerX;
+            const dy = e.clientY - centerY;
+            const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+            
+            // Rotate needle (add 90 degrees because needle points north by default)
+            compassNeedle.style.transform = `translate(-50%, -50%) rotate(${angle + 90}deg)`;
+        });
+
+        // Prevent form submission for demo
+        document.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            console.log('Form submitted');
+        });
+    </script>
+</body>
+</html>
